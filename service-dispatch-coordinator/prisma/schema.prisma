@@ -1,0 +1,44 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Technician {
+  id           String   @id @default(cuid())
+  name         String
+  phone        String
+  skills       String[]
+  isAvailable  Boolean  @default(true)
+  location     Unsupported("geometry(Point, 4326)")
+  jobs         Job[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Job {
+  id           String      @id @default(cuid())
+  description  String
+  customerPhone String
+  location     Unsupported("geometry(Point, 4326)")
+  status       JobStatus   @default(PENDING)
+  technicianId String?
+  technician   Technician? @relation(fields: [technicianId], references: [id])
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+}
+
+enum JobStatus {
+  PENDING
+  DISPATCHING
+  ACCEPTED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}

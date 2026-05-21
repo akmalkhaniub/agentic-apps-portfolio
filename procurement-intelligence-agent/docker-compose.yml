@@ -1,0 +1,96 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Docker Compose — Local development environment
+# Runs: MySQL, FastAPI, MCP Server, Streamlit
+# Usage: docker compose up -d
+# ─────────────────────────────────────────────────────────────────────────────
+
+services:
+  # ── MySQL (local replacement for RDS) ─────────────────────────────────────
+  mysql:
+    image: mysql:8.0
+    container_name: procurement-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: procurement
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: localdevpassword
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── FastAPI Service ───────────────────────────────────────────────────────
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: procurement-api
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      DB_HOST: mysql
+      DB_PORT: "3306"
+      DB_USER: admin
+      DB_PASSWORD: localdevpassword
+      DB_NAME: procurement
+      MCP_SERVER_URL: http://mcp:8080/mcp
+      MCP_TRANSPORT: streamable-http
+      API_PORT: "8000"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import httpx; httpx.get('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ── MCP Tool Server ──────────────────────────────────────────────────────
+  mcp:
+    build:
+      context: .
+      dockerfile: Dockerfile.mcp
+    container_name: procurement-mcp-server
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    environment:
+      DB_HOST: mysql
+      DB_PORT: "3306"
+      DB_USER: admin
+      DB_PASSWORD: localdevpassword
+      DB_NAME: procurement
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  # ── Streamlit Dashboard ──────────────────────────────────────────────────
+  dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: procurement-dashboard
+    restart: unless-stopped
+    ports:
+      - "8501:8501"
+    env_file:
+      - .env
+    environment:
+      API_BASE_URL: http://api:8000
+    command: ["streamlit", "run", "ui/app.py", "--server.port", "8501", "--server.address", "0.0.0.0"]
+    depends_on:
+      - api
+
+volumes:
+  mysql_data:

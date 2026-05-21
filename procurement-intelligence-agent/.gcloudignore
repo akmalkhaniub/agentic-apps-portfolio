@@ -1,0 +1,10 @@
+.git
+.gitignore
+venv/
+.venv/
+__pycache__/
+*.db
+*.sqlite
+node_modules/
+.chroma/
+chroma.sqlite3

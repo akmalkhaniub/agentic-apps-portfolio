@@ -1,0 +1,46 @@
+{
+  "name": "agentic-customer-support",
+  "version": "1.0.3",
+  "description": "A support agent that doesn't just \"chat\" but actually *fixes* customer problems by interacting with company APIs and databases.",
+  "main": "index.js",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "start": "tsx src/server.ts",
+    "seed": "tsx src/db/seed.ts",
+    "test": "vitest run",
+    "lint": "eslint src/**/*.ts",
+    "format": "prettier --write src/**/*.ts",
+    "db:push": "drizzle-kit push"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@ai-sdk/anthropic": "^3.0.78",
+    "@ai-sdk/google": "^1.2.22",
+    "@ai-sdk/openai": "^1.1.0",
+    "@anthropic-ai/sdk": "^0.95.1",
+    "@hono/node-server": "^2.0.2",
+    "@libsql/client": "^0.17.3",
+    "ai": "^4.1.0",
+    "chromadb": "^3.4.3",
+    "dotenv": "^17.4.2",
+    "drizzle-orm": "^0.45.2",
+    "hono": "^4.12.18",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^25.6.2",
+    "@types/supertest": "^6.0.2",
+    "drizzle-kit": "^0.30.4",
+    "eslint": "^9.20.1",
+    "prettier": "^3.5.1",
+    "supertest": "^7.0.0",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.59.3",
+    "vitest": "^3.0.5"
+  }
+}

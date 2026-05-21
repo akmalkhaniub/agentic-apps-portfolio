@@ -1,0 +1,11 @@
+pydantic-ai
+streamlit
+pandas
+numpy
+scipy
+matplotlib
+seaborn
+docling
+qdrant-client
+python-dotenv
+tabulate

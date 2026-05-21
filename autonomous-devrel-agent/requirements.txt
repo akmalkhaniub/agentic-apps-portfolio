@@ -1,0 +1,6 @@
+haystack-ai
+discord.py
+slack_bolt
+pymilvus
+giskard
+python-dotenv

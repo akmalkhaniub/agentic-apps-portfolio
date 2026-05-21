@@ -1,0 +1,36 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Dockerfile.mcp — MCP Tool Server (FastMCP over HTTP)
+# ─────────────────────────────────────────────────────────────────────────────
+FROM python:3.11-slim AS base
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1
+
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    default-libmysqlclient-dev \
+    pkg-config \
+    && rm -rf /var/lib/apt/lists/*
+
+FROM base AS deps
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
+COPY pyproject.toml uv.lock* ./
+RUN uv sync --no-dev --frozen 2>/dev/null || uv sync --no-dev
+
+FROM base AS final
+COPY --from=deps /app/.venv /app/.venv
+ENV PATH="/app/.venv/bin:$PATH"
+
+COPY mcp_server/ ./mcp_server/
+COPY retrieval/ ./retrieval/
+COPY sql_agent/ ./sql_agent/
+
+RUN adduser --disabled-password --gecos "" appuser
+USER appuser
+
+EXPOSE 8080
+
+CMD ["python", "-m", "mcp_server.server", "--transport", "http", "--port", "8080"]

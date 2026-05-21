@@ -1,0 +1,14 @@
+node_modules
+dist
+npm-debug.log
+.env
+.env.test
+.git
+.github
+tests
+vitest.config.ts
+eslint.config.mjs
+.prettierrc
+*.db-journal
+*.db-shm
+*.db-wal

@@ -1,0 +1,10 @@
+node_modules
+dist
+npm-debug.log
+.env
+.git
+.github
+tests
+vitest.config.ts
+eslint.config.mjs
+.prettierrc
