@@ -5,7 +5,7 @@ import {
   ShieldAlert, Code2, ShieldCheck, Sun, Moon,
   Zap, GitBranch, LayoutDashboard,
   FileKey, Banknote, Stethoscope, DollarSign, SearchCode,
-  FlaskConical, Truck, PlaneTakeoff, Network, Users
+  FlaskConical, Truck, PlaneTakeoff, Network, Users, Plug
 } from 'lucide-react';
 import CustomerSupportView from './components/CustomerSupportView';
 import ModelRouterView from './components/ModelRouterView';
@@ -25,6 +25,7 @@ import ServiceDispatchView from './components/ServiceDispatchView';
 import TravelConciergeView from './components/TravelConciergeView';
 import EnterpriseSwarmView from './components/EnterpriseSwarmView';
 import MultiAgentDebateView from './components/MultiAgentDebateView';
+import MCPGatewayView from './components/MCPGatewayView';
 import HomeView from './components/HomeView';
 import { ThemeProvider, useTheme } from './context/ThemeContext';
 import { InspectorProvider } from './context/InspectorContext';
@@ -77,6 +78,7 @@ const SIDEBAR_GROUPS = [
     items: [
       { to: '/enterprise-swarm',      icon: Network,       label: 'Knowledge Swarm',     color: '#4f46e5' },
       { to: '/multi-agent-debate',    icon: Users,         label: 'Agent Debate',        color: '#eab308' },
+      { to: '/mcp-gateway',           icon: Plug,          label: 'MCP Gateway',         color: '#06b6d4' },
     ]
   }
 ];
@@ -99,6 +101,7 @@ const ROUTE_TITLES: Record<string, string> = {
   '/scientific-sandbox':    'Research Sandbox — Agentic Portfolio',
   '/service-dispatch':      'Service Dispatch — Agentic Portfolio',
   '/travel-concierge':      'Travel Concierge — Agentic Portfolio',
+  '/mcp-gateway':           'MCP Gateway — Agentic Portfolio',
 };
 
 function TitleUpdater() {
@@ -242,6 +245,7 @@ export default function App() {
                 <Route path="/travel-concierge"       element={<TravelConciergeView />} />
                 <Route path="/enterprise-swarm"       element={<EnterpriseSwarmView />} />
                 <Route path="/multi-agent-debate"     element={<MultiAgentDebateView />} />
+                <Route path="/mcp-gateway"            element={<MCPGatewayView />} />
                 <Route path="*"                      element={<NotFoundView />} />
               </Routes>
             </div>

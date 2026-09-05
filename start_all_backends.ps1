@@ -45,5 +45,13 @@ Start-Job -Name "Multi Agent Debate" -ScriptBlock {
     python main.py
 }
 
+# 9. MCP Tool Gateway — Streamable HTTP server (Node, Port 8006)
+Write-Host "Starting MCP Tool Gateway HTTP server (8006)..."
+Start-Process "npm" -ArgumentList "run start:http" -WorkingDirectory "$baseDir\mcp-tool-gateway"
+
+# 10. MCP Tool Gateway — host agent (Node, Port 3003)
+Write-Host "Starting MCP Tool Gateway host agent (3003)..."
+Start-Process "npm" -ArgumentList "run start:host" -WorkingDirectory "$baseDir\mcp-tool-gateway"
+
 Write-Host ""
 Write-Host "All backends have been launched in the background!" -ForegroundColor Green

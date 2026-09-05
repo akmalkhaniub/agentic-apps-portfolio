@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "portfolio-gateway": {
+      "command": "npx",
+      "args": [
+        "tsx",
+        "G:/ReplitProjects/AgenticApps/mcp-tool-gateway/src/server/index.ts"
+      ]
+    }
+  }
+}
