@@ -17,4 +17,5 @@ export const API_ENDPOINTS = {
   scientificSandbox: 'http://localhost:8501',
   serviceDispatch: 'http://localhost:3001',
   travelConcierge: 'http://localhost:8003',
+  mcpGateway: 'http://localhost:3003',
 };

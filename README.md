@@ -9,7 +9,7 @@
   <img src="https://img.shields.io/badge/Temporal.io-Durable%20Execution-f16622?style=for-the-badge&logo=temporal" alt="Temporal">
 </p>
 
-Welcome to the **Agentic AI Applications Portfolio**—a state-of-the-art collection of **17 specialized AI agent microservices** demonstrating advanced orchestrations, Retrieval-Augmented Generation (RAG), voice automation, serverless computation, event-driven streaming pipelines, and production-grade software engineering.
+Welcome to the **Agentic AI Applications Portfolio**—a state-of-the-art collection of **18 specialized AI agent microservices** demonstrating advanced orchestrations, Retrieval-Augmented Generation (RAG), voice automation, serverless computation, event-driven streaming pipelines, and production-grade software engineering.
 
 This monorepo consolidates multiple specialized AI services under a single React/Vite dashboard, allowing you to run, trigger, and inspect the outputs of parallel agents simultaneously.
 
@@ -34,9 +34,11 @@ graph TD
     UI --> P3000["🛠️ Coding Feature Agent (Port 3000)"]
     UI --> P8004["🧠 Knowledge Swarm (Port 8004)"]
     UI --> P8005["⚖️ Multi-Agent Debate (Port 8005)"]
+    UI --> P3003["🔌 MCP Host Agent (Port 3003)"]
+    P3003 --> P8006["🧩 MCP Gateway Server (Port 8006)"]
 
     class UI ui;
-    class P8001,P8081,P8002,P8082,P8501,P8003,P3000,P8004,P8005 port;
+    class P8001,P8081,P8002,P8082,P8501,P8003,P3000,P8004,P8005,P3003,P8006 port;
 ```
 
 ---
@@ -80,6 +82,7 @@ Here is the complete registry of all applications, tools, and frontends in this 
 | **15** | **[Compliance & PII Sanitizer](./compliance-pii-sanitizer)** | Microsoft Presidio, Ollama, Phi-3 | **Privacy Gateway:** Intercepts outgoing LLM calls, masks or swaps PII (emails, names), and validates safety scores using a local Ollama instance. |
 | **16** | **[Enterprise Knowledge Swarm](./enterprise-knowledge-swarm)** | FastAPI, Asyncio, RAG | **Hierarchical Swarm:** Uses a manager agent to split research queries and coordinate multiple parallel subagents to synthesize RAG reports. |
 | **17** | **[Multi-Agent Debate](./multi-agent-debate)** | FastAPI, LLM-Debate | **Consensus Resolution:** Simulates a structured debate between a proponent agent and opponent agent on a given topic, moderated by a third agent. |
+| **18** | **[MCP Tool Gateway](./mcp-tool-gateway)** | MCP SDK, TypeScript, Hono | **Protocol Interop:** An MCP server (stdio + Streamable HTTP on 8006) exposing tools, resources, and prompts, plus a host agent (3003) that discovers tools at runtime from the gateway *and* a third-party MCP server, then routes each call to its owner. |
 
 ---
 

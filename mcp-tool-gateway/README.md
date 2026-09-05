@@ -7,7 +7,7 @@ underneath** agents: it exposes portfolio tools, resources, and prompts over the
 standard protocol, so **any** MCP client — Claude Desktop, Cursor, or the portfolio's
 own host agent — can discover and call them at runtime, with no hardcoding.
 
-> **Status:** Milestone 3 — a **host agent** on port **3002** now discovers tools
+> **Status:** Milestone 3 — a **host agent** on port **3003** now discovers tools
 > at runtime from this gateway (over HTTP) *and* a second, third-party MCP server,
 > merges the catalogs, and drives an Opus tool-use loop. The gateway exposes all
 > three MCP primitives (**tools**, **resources**, **prompts**) over **two
@@ -45,13 +45,13 @@ mcp-tool-gateway/
 │   └── host/
 │       ├── registry.ts           # connects to N MCP servers, merges + routes tools
 │       ├── agent.ts              # Anthropic tool-use loop over discovered tools
-│       └── server.ts             # host HTTP entry (port 3002): POST /chat
+│       └── server.ts             # host HTTP entry (port 3003): POST /chat
 ├── tests/server.test.ts / host.test.ts
 ├── claude_desktop_config.json
 └── package.json
 ```
 
-## The host agent (port 3002)
+## The host agent (port 3003)
 
 The host is **protocol-native**: its entire tool catalog is discovered at runtime.
 It connects to this gateway over Streamable HTTP and, in the background, to a
@@ -67,10 +67,10 @@ npm run dev:http
 npm run dev:host
 
 # inspect the merged, runtime-discovered catalog:
-curl -s http://localhost:3002/health
+curl -s http://localhost:3003/health
 
 # ask the agent (it picks and calls MCP tools to answer):
-curl -s -X POST http://localhost:3002/chat \
+curl -s -X POST http://localhost:3003/chat \
   -H "Content-Type: application/json" \
   -d '{"message":"What stack does the multi-agent-debate app use, and what is 21 + 21?"}'
 ```
@@ -114,5 +114,5 @@ that's the point.
 | :---: | :--- |
 | **1** ✅ | stdio server + one Zod tool + Claude Desktop config + tests |
 | **2** ✅ | Streamable HTTP transport (**port 8006**) + resources (`portfolio://apps/{name}`) + prompts |
-| **3** ✅ | Host agent (**port 3002**): runtime tool discovery + a second, third-party MCP server |
+| **3** ✅ | Host agent (**port 3003**): runtime tool discovery + a second, third-party MCP server |
 | 4 | Wire into `start_all_backends.ps1`, the root README registry, and the dashboard UI |

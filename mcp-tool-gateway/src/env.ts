@@ -6,7 +6,7 @@ export const env = {
   httpPort: Number(process.env.MCP_HTTP_PORT ?? 8006),
 
   /** Host agent HTTP port. */
-  hostPort: Number(process.env.MCP_HOST_PORT ?? 3002),
+  hostPort: Number(process.env.MCP_HOST_PORT ?? 3003),
 
   /** Where the host reaches this gateway over Streamable HTTP. */
   gatewayUrl: process.env.GATEWAY_HTTP_URL ?? 'http://localhost:8006/mcp',
