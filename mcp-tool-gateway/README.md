@@ -7,26 +7,40 @@ underneath** agents: it exposes portfolio tools, resources, and prompts over the
 standard protocol, so **any** MCP client — Claude Desktop, Cursor, or the portfolio's
 own host agent — can discover and call them at runtime, with no hardcoding.
 
-> **Status:** Milestone 1 — a working **stdio** MCP server exposing one Zod-typed tool.
-> See the roadmap below for the HTTP transport, resources/prompts, and the host agent.
+> **Status:** Milestone 2 — the gateway now exposes all three MCP primitives
+> (**tools**, **resources**, **prompts**) over **two transports**: stdio (for
+> desktop clients) and Streamable HTTP on port **8006** (for the network). See
+> the roadmap below for the host agent.
 
 ---
 
-## What ships in Milestone 1
+## What the gateway exposes
 
-- **`McpServer`** over the **stdio** transport (what desktop MCP clients spawn and speak to).
-- One fully-working tool, **`lookup_portfolio_app`**, with a Zod input schema the SDK
-  advertises to clients during discovery and a structured content response.
-- A copy-paste **Claude Desktop** config for the live "aha" demo.
-- End-to-end **smoke tests** using the SDK's in-memory transport.
+- **Tool** — `lookup_portfolio_app`: Zod-typed input the SDK advertises during
+  discovery, returning a structured content response.
+- **Resources** — `portfolio://apps` (index) and `portfolio://apps/{name}`
+  (templated, per-app details), showing readable context vs. callable actions.
+- **Prompt** — `debate_topic`: a parameterized template that front-ends the
+  Multi-Agent Debate app (#17).
+
+...over two transports, both exposing an identical surface via `buildServer()`:
+
+- **stdio** — what Claude Desktop / Cursor spawn (`src/server/index.ts`).
+- **Streamable HTTP** — the current MCP HTTP standard, stateless, on port 8006
+  (`src/server/transport-http.ts`). SSE is deprecated and not used.
 
 ## Layout
 
 ```
 mcp-tool-gateway/
-├── src/server/
-│   ├── index.ts   # McpServer + stdio transport bootstrap
-│   └── tools.ts   # Zod-validated tool registry
+├── src/
+│   ├── env.ts                    # port config
+│   └── server/
+│       ├── build.ts              # buildServer(): registers everything (shared)
+│       ├── index.ts              # stdio transport entry
+│       ├── transport-http.ts     # Streamable HTTP entry (port 8006)
+│       ├── data.ts               # shared portfolio registry
+│       ├── tools.ts / resources.ts / prompts.ts
 ├── tests/server.test.ts
 ├── claude_desktop_config.json
 └── package.json
@@ -36,8 +50,15 @@ mcp-tool-gateway/
 
 ```bash
 npm install
-npm run dev:server   # starts the stdio server (speaks JSON-RPC on stdin/stdout)
+npm run dev:server   # stdio server (JSON-RPC on stdin/stdout)
+npm run dev:http     # Streamable HTTP server on http://localhost:8006/mcp
 npm test             # in-memory client <-> server smoke tests
+```
+
+Quick HTTP check once `dev:http` is running:
+
+```bash
+curl -s http://localhost:8006/health
 ```
 
 > **stdio note:** the protocol owns `stdout`. This server logs diagnostics to
@@ -60,6 +81,6 @@ that's the point.
 | Milestone | Adds |
 | :---: | :--- |
 | **1** ✅ | stdio server + one Zod tool + Claude Desktop config + tests |
-| 2 | Streamable HTTP transport (**port 8006**) + resources (`portfolio://apps/{name}`) + prompts |
+| **2** ✅ | Streamable HTTP transport (**port 8006**) + resources (`portfolio://apps/{name}`) + prompts |
 | 3 | Host agent (**port 3002**): runtime tool discovery + a second, third-party MCP server |
 | 4 | Wire into `start_all_backends.ps1`, the root README registry, and the dashboard UI |

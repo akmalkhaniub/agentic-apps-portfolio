@@ -1,40 +1,13 @@
 import { z } from 'zod';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-
-/**
- * A lightweight, dependency-free registry of the apps in this portfolio.
- * Milestone 1 keeps data inline; a later milestone swaps this for the real
- * libsql/Drizzle-backed `query_portfolio_db` tool.
- */
-const PORTFOLIO: Record<string, { port: number | null; stack: string; focus: string }> = {
-  'agentic-customer-support': {
-    port: null,
-    stack: 'Vercel AI SDK, Hono, Zod',
-    focus: 'High-reliability tool-use for order verification, shipment status, and refunds.',
-  },
-  'compliance-pii-sanitizer': {
-    port: 8001,
-    stack: 'Microsoft Presidio, Ollama, Phi-3',
-    focus: 'Masks or swaps PII on outgoing LLM calls and validates safety scores locally.',
-  },
-  'multi-agent-debate': {
-    port: 8005,
-    stack: 'FastAPI, LLM-Debate',
-    focus: 'Structured proponent/opponent debate moderated by a third agent.',
-  },
-  'enterprise-knowledge-swarm': {
-    port: 8004,
-    stack: 'FastAPI, Asyncio, RAG',
-    focus: 'Manager agent splits queries across parallel subagents to synthesize RAG reports.',
-  },
-};
+import { PORTFOLIO, APP_NAMES } from './data.js';
 
 /**
  * Registers all tools this MCP server exposes.
  *
- * Milestone 1 ships a single, fully-working tool that demonstrates the core
- * MCP contract: a Zod-typed input schema (which the SDK advertises to clients
- * during discovery) and a structured content response.
+ * `lookup_portfolio_app` demonstrates the core MCP tool contract: a Zod-typed
+ * input schema (which the SDK advertises to clients during discovery) and a
+ * structured content response.
  */
 export function registerTools(server: McpServer): void {
   server.registerTool(
@@ -54,13 +27,12 @@ export function registerTools(server: McpServer): void {
       const app = PORTFOLIO[name];
 
       if (!app) {
-        const known = Object.keys(PORTFOLIO).join(', ');
         return {
           isError: true,
           content: [
             {
               type: 'text',
-              text: `No app named "${name}". Known apps in this demo registry: ${known}.`,
+              text: `No app named "${name}". Known apps in this demo registry: ${APP_NAMES.join(', ')}.`,
             },
           ],
         };

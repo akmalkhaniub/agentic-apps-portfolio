@@ -1,27 +1,18 @@
-import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-import { registerTools } from './tools.js';
+import { buildServer } from './build.js';
 
 /**
- * MCP Tool Gateway — Milestone 1: stdio server.
+ * MCP Tool Gateway — stdio entry point.
  *
- * Exposes portfolio tools over the Model Context Protocol via the stdio
- * transport, which is what desktop MCP clients (Claude Desktop, Cursor) spawn
- * and speak to. A later milestone adds a Streamable HTTP transport on port 8006
- * so the React dashboard and the host agent can reach the same server over the
- * network.
+ * Exposes the gateway over the stdio transport, which is what desktop MCP
+ * clients (Claude Desktop, Cursor) spawn and speak to. For the network-facing
+ * Streamable HTTP transport, see `transport-http.ts`.
  *
  * IMPORTANT (stdio): the protocol owns stdout. Never `console.log` here — it
  * corrupts the JSON-RPC stream. Diagnostics go to stderr via `console.error`.
  */
 async function main(): Promise<void> {
-  const server = new McpServer({
-    name: 'mcp-tool-gateway',
-    version: '0.1.0',
-  });
-
-  registerTools(server);
-
+  const server = buildServer();
   const transport = new StdioServerTransport();
   await server.connect(transport);
 
