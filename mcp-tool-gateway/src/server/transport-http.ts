@@ -90,8 +90,16 @@ function requestListener(req: IncomingMessage, res: ServerResponse): void {
   });
 }
 
-createServer(requestListener).listen(env.httpPort, () => {
-  console.error(
-    `[mcp-tool-gateway] Streamable HTTP server ready on http://localhost:${env.httpPort}${MCP_PATH}`
-  );
-});
+/** Creates the HTTP server without listening — used by the entry point and tests. */
+export function createHttpServer() {
+  return createServer(requestListener);
+}
+
+// Start only when run directly (not when imported by a test).
+if (import.meta.url === `file://${process.argv[1]}` || process.argv[1]?.endsWith('transport-http.ts')) {
+  createHttpServer().listen(env.httpPort, () => {
+    console.error(
+      `[mcp-tool-gateway] Streamable HTTP server ready on http://localhost:${env.httpPort}${MCP_PATH}`
+    );
+  });
+}

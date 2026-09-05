@@ -1,6 +1,6 @@
 {
   "name": "mcp-tool-gateway",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "An MCP (Model Context Protocol) server + host demo. Exposes portfolio tools, resources, and prompts over the standard protocol so any MCP client (Claude Desktop, Cursor, or the portfolio host agent) can discover and call them.",
   "main": "dist/server/index.js",
   "type": "module",
@@ -9,6 +9,8 @@
     "start:server": "tsx src/server/index.ts",
     "dev:http": "tsx watch src/server/transport-http.ts",
     "start:http": "tsx src/server/transport-http.ts",
+    "dev:host": "tsx watch src/host/server.ts",
+    "start:host": "tsx src/host/server.ts",
     "build": "tsc",
     "test": "vitest run",
     "lint": "eslint src/**/*.ts",
@@ -18,8 +20,11 @@
   "author": "Akmal Khan",
   "license": "MIT",
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.95.1",
+    "@hono/node-server": "^2.0.2",
     "@modelcontextprotocol/sdk": "^1.12.0",
     "dotenv": "^17.4.2",
+    "hono": "^4.12.18",
     "zod": "^3.25.0"
   },
   "devDependencies": {

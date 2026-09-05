@@ -7,10 +7,11 @@ underneath** agents: it exposes portfolio tools, resources, and prompts over the
 standard protocol, so **any** MCP client — Claude Desktop, Cursor, or the portfolio's
 own host agent — can discover and call them at runtime, with no hardcoding.
 
-> **Status:** Milestone 2 — the gateway now exposes all three MCP primitives
-> (**tools**, **resources**, **prompts**) over **two transports**: stdio (for
-> desktop clients) and Streamable HTTP on port **8006** (for the network). See
-> the roadmap below for the host agent.
+> **Status:** Milestone 3 — a **host agent** on port **3002** now discovers tools
+> at runtime from this gateway (over HTTP) *and* a second, third-party MCP server,
+> merges the catalogs, and drives an Opus tool-use loop. The gateway exposes all
+> three MCP primitives (**tools**, **resources**, **prompts**) over **two
+> transports** (stdio + Streamable HTTP on **8006**).
 
 ---
 
@@ -34,17 +35,48 @@ own host agent — can discover and call them at runtime, with no hardcoding.
 ```
 mcp-tool-gateway/
 ├── src/
-│   ├── env.ts                    # port config
-│   └── server/
-│       ├── build.ts              # buildServer(): registers everything (shared)
-│       ├── index.ts              # stdio transport entry
-│       ├── transport-http.ts     # Streamable HTTP entry (port 8006)
-│       ├── data.ts               # shared portfolio registry
-│       ├── tools.ts / resources.ts / prompts.ts
-├── tests/server.test.ts
+│   ├── env.ts                    # port/model/server config
+│   ├── server/
+│   │   ├── build.ts              # buildServer(): registers everything (shared)
+│   │   ├── index.ts              # stdio transport entry
+│   │   ├── transport-http.ts     # Streamable HTTP entry (port 8006)
+│   │   ├── data.ts               # shared portfolio registry
+│   │   └── tools.ts / resources.ts / prompts.ts
+│   └── host/
+│       ├── registry.ts           # connects to N MCP servers, merges + routes tools
+│       ├── agent.ts              # Anthropic tool-use loop over discovered tools
+│       └── server.ts             # host HTTP entry (port 3002): POST /chat
+├── tests/server.test.ts / host.test.ts
 ├── claude_desktop_config.json
 └── package.json
 ```
+
+## The host agent (port 3002)
+
+The host is **protocol-native**: its entire tool catalog is discovered at runtime.
+It connects to this gateway over Streamable HTTP and, in the background, to a
+second third-party MCP server over stdio (the reference `server-everything`,
+spawned via npx). Tools are namespaced `<server>__<tool>` and the registry routes
+each call back to the owning server — the model never knows which server a tool
+came from.
+
+```bash
+# 1. start the gateway's HTTP transport
+npm run dev:http
+# 2. start the host (needs ANTHROPIC_API_KEY in .env)
+npm run dev:host
+
+# inspect the merged, runtime-discovered catalog:
+curl -s http://localhost:3002/health
+
+# ask the agent (it picks and calls MCP tools to answer):
+curl -s -X POST http://localhost:3002/chat \
+  -H "Content-Type: application/json" \
+  -d '{"message":"What stack does the multi-agent-debate app use, and what is 21 + 21?"}'
+```
+
+That single question exercises **both** servers: `gateway__lookup_portfolio_app`
+and `everything__get-sum`.
 
 ## Run it
 
@@ -82,5 +114,5 @@ that's the point.
 | :---: | :--- |
 | **1** ✅ | stdio server + one Zod tool + Claude Desktop config + tests |
 | **2** ✅ | Streamable HTTP transport (**port 8006**) + resources (`portfolio://apps/{name}`) + prompts |
-| 3 | Host agent (**port 3002**): runtime tool discovery + a second, third-party MCP server |
+| **3** ✅ | Host agent (**port 3002**): runtime tool discovery + a second, third-party MCP server |
 | 4 | Wire into `start_all_backends.ps1`, the root README registry, and the dashboard UI |
